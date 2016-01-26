@@ -3,7 +3,15 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
-    public float movementSpeed = 3.0f;
+    #region Variables
+    //Movement
+    private float movementSpeed = 10.0f;
+    private float walkingSpeed = 6.0f;
+    private float runningSpeed = 10.0f;
+    private bool IsRunning;
+    private bool IsWalking;
+    private string animationtoplay;
+
 
     //Animation triggers
     bool IsAttacking;
@@ -15,20 +23,24 @@ public class PlayerController : MonoBehaviour {
     public float speed = 50.0f;
     private float rotate;
     private Quaternion qTo = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-    private Quaternion qForward = Quaternion.identity;
-    private Quaternion qBack = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+    #endregion
 
-
+    #region Initialisation
     // Use this for initialization
     void Start () {
         IsAttacking = false;
         IsMoving = false;
         IsJumping = false;
+        IsWalking = false;
+        IsRunning = true;
+        animationtoplay = "Run";
         Attackelapsed = 0.0f;
     }
-	
-	// Update is called once per frame
-	void Update () {
+    #endregion
+
+
+    // Update is called once per frame
+    void Update () {
         GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x, GetComponent<Rigidbody>().velocity.y, 0); //Set X and Z velocity to 0
         if (Time.time > Attackelapsed + 1)
         {
@@ -85,5 +97,22 @@ public class PlayerController : MonoBehaviour {
         }
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, qTo, Time.deltaTime * speed);
+
+        //Switching between running and walking
+        if(Input.GetKeyDown(KeyCode.V))
+        {
+            if (IsRunning)
+            {
+                movementSpeed = walkingSpeed;
+                animationtoplay = "Walk";
+            }
+            if (IsWalking)
+            {
+                movementSpeed = runningSpeed;
+                animationtoplay = "Run";
+            }
+            IsRunning = !IsRunning;
+            IsWalking = !IsWalking;
+        }
     }
 }
